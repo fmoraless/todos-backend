@@ -32,6 +32,18 @@ app.post('/todos', (req, res) => {
     res.json(newTodo);
 });
 
+app.delete('/todos/:todoId', (req, res) => {
+    const todoId = req.params.todoId;
+    fakeTodos = fakeTodos.filter(todo => todo.id !== todoId);
+    res.json(fakeTodos);
+})
+
+app.put('/todos/:todoId', (req, res) => {
+    const todoId = req.params.todoId;
+    fakeTodos.find(todo => todo.id === todoId).isCompleted = true;
+    res.json(fakeTodos);
+});
+
 
 app.listen(8088, () => {
     console.log('Server is listening on port 8088');
