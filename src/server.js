@@ -1,5 +1,5 @@
 import express from 'express';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 
 const start = async () => {
     const client = await MongoClient.connect('mongodb://localhost:27017/fsr-todos', {
@@ -51,14 +51,18 @@ app.post('/todos', async (req, res) => {
 
 app.delete('/todos/:todoId', async (req, res) => {
     const todoId = req.params.todoId;
-    fakeTodos = fakeTodos.filter(todo => todo.id !== todoId);
-    res.json(fakeTodos);
+    await db.collection('todos').deleteOne({ _id: ObjectId(todoId) });
+    const todos = await db.collection('todos').find({}).toArray();
+    res.json(todos);
 })
 
-app.put('/todos/:todoId', (req, res) => {
+app.put('/todos/:todoId', async (req, res) => {
     const todoId = req.params.todoId;
-    fakeTodos.find(todo => todo.id === todoId).isCompleted = true;
-    res.json(fakeTodos);
+    await db.collection('todos').updateOne({ _id: ObjectId(todoId) }, {
+        $set: { isCompleted: true },
+    });
+    const todos = await db.collection('todos').find({}).toArray();
+    res.json(todos);
 });
 
 
